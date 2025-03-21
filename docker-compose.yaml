@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./config/sample.config
+    depends_on:
+      - redis
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    env_file:
+      - ./config/sample.config
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Mock services for local development
+  user-service:
+    image: kennethreitz/httpbin
+    ports:
+      - "8081:80"
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  payment-service:
+    image: kennethreitz/httpbin
+    ports:
+      - "8082:80"
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  chatbot-qa-service:
+    image: kennethreitz/httpbin
+    ports:
+      - "8083:80"
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  crawling-service:
+    image: kennethreitz/httpbin
+    ports:
+      - "8084:80"
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  microservices-network:
+    driver: bridge
